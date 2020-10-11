@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../widgets/app_drawer.dart';
 import '../screens/cart_screen.dart';
 import '../widgets/badge.dart';
 import '../providers/products_provider.dart';
@@ -43,13 +44,14 @@ class ProductOverviewScreen extends StatelessWidget {
               icon: Icon(
                 Icons.shopping_cart,
               ),
-              onPressed: (){
+              onPressed: () {
                 Navigator.of(context).pushNamed(CartScreen.routeName);
               },
             ),
           )
         ],
       ),
+      drawer: AppDrawer(),
       body: ProductsGrid(),
     );
   }

@@ -68,7 +68,7 @@ class Products with ChangeNotifier {
       price: product.price,
       imageUrl: product.imageUrl,
     );
-    _items.add(product);
+    _items.add(newProduct);
     //_items.insert(0, product); //to insert at start
     notifyListeners();
   }

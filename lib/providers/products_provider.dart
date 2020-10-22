@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class Products with ChangeNotifier {
   List<Product> _items = [
-    Product(
+    /*Product(
       id: 'p1',
       title: 'Red Shirt',
       description: 'A red shirt - it is pretty red!',
@@ -36,7 +36,7 @@ class Products with ChangeNotifier {
       price: 49.99,
       imageUrl:
           'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    ),
+    ),*/
   ];
 
   var _showFavouritesOnly = false;
@@ -60,6 +60,29 @@ class Products with ChangeNotifier {
 
   Product findById(String id) {
     return _items.firstWhere((prod) => prod.id == id);
+  }
+
+  Future<void> fetchAndSetProducts() async {
+    const url = 'https://flutter-update-a9f1a.firebaseio.com/products.json';
+    try {
+      final response = await http.get(url);
+      print(json.decode(response.body));
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((prodId, ProdData) {
+        loadedProducts.add(Product(
+            id: prodId,
+            title: ProdData['title'],
+            description: ProdData['description'],
+            imageUrl: ProdData['imageUrl'],
+            price: ProdData['price'],
+            isFavourite: ProdData['isFavourite']));
+      });
+      _items = loadedProducts;
+      notifyListeners();
+    } catch (error) {
+      throw (error);
+    }
   }
 
   Future<void> addProduct(Product product) async {
@@ -92,9 +115,19 @@ class Products with ChangeNotifier {
     }
   }
 
-  void updateProduct(String id, Product product) {
+  Future<void> updateProduct(String id, Product product) async {
     int index = _items.indexWhere((prod) => prod.id == id);
     if (index >= 0) {
+      final url =
+          'https://flutter-update-a9f1a.firebaseio.com/products/$id.json';
+      await http.patch(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavourite': product.isFavourite,
+          }));
       _items[index] = product;
       notifyListeners();
     }

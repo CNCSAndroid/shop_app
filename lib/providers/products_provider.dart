@@ -75,10 +75,12 @@ class Products with ChangeNotifier {
             title: ProdData['title'],
             description: ProdData['description'],
             imageUrl: ProdData['imageUrl'],
-            price: ProdData['price'],
+            price: double.parse(ProdData['price'].toString()),
             isFavourite: ProdData['isFavourite']));
       });
+      print("loadedProducts are " +loadedProducts.length.toString());
       _items = loadedProducts;
+      print("_items are "+_items.length.toString());
       notifyListeners();
     } catch (error) {
       throw (error);

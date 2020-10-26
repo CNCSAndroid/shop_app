@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/http_exception.dart';
 import 'product.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -78,9 +79,9 @@ class Products with ChangeNotifier {
             price: double.parse(ProdData['price'].toString()),
             isFavourite: ProdData['isFavourite']));
       });
-      print("loadedProducts are " +loadedProducts.length.toString());
+      print("loadedProducts are " + loadedProducts.length.toString());
       _items = loadedProducts;
-      print("_items are "+_items.length.toString());
+      print("_items are " + _items.length.toString());
       notifyListeners();
     } catch (error) {
       throw (error);
@@ -135,8 +136,19 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((product) => product.id == id);
+  Future<void> deleteProduct(String id) async {
+    final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
+    var existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final url = 'https://flutter-update-a9f1a.firebaseio.com/products/$id.json';
+      final response = await http.delete(url);
+      if (response.statusCode >= 400) {
+        _items.insert(existingProductIndex, existingProduct);
+        notifyListeners();
+        throw HttpException('Could not delete product');
+      }
+      existingProduct = null;
+
   }
 }

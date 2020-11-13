@@ -25,6 +25,12 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
+  Future<void> fetchAndSetOrders() async {
+    const url = 'https://flutter-update-a9f1a.firebaseio.com/orders.json';
+    final response=await http.get(url);
+    print(json.decode(response.body));
+  }
+
   Future<void> addOrders(List<CartItem> cartProduct, double total) async {
     const url = 'https://flutter-update-a9f1a.firebaseio.com/orders.json';
     final timeStamp = DateTime.now();
